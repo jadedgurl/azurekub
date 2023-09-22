@@ -1,3 +1,4 @@
+#This is an Azure Montreal College Tutorial for Storage Account creation--->Storage Container name Creation--->Storage Blob Creation
 locals{ 
   cluster_names=["mcitk8s","mcitk8s2","mcitk8s3","mcitk8s4"]
 }
@@ -30,27 +31,33 @@ resource "azurerm_kubernetes_cluster" "k8scluster" {
   location            = azurerm_resource_group.azureresourcegroup.location
   resource_group_name = azurerm_resource_group.azureresourcegroup.name
   dns_prefix          = "exampleaks1"
+
   default_node_pool {
     name       = "default"
     node_count = 1
     vm_size    = "Standard_D2_v2"
   }
+
   identity {
     type = "SystemAssigned"
   }
+
   tags = {
     Environment = "Production"
   }
 }
+
 output "client_certificate" {
   value     = azurerm_kubernetes_cluster.k8scluster[each.key].kube_config.client_certificate
   sensitive = true
 }
+
 output "kube_config" {
   value = azurerm_kubernetes_cluster.k8scluster[each.key].kube_config_raw
+
   sensitive = true
 }
-resource "azurerm_mssql_server" "mcitsqlserv" {
+resource "azurerm_sql_server" "mcitsqlserv" {
   name                         = "mcitsqlserver"
   resource_group_name          = azurerm_resource_group.azureresourcegroup.name
   location                     = azurerm_resource_group.azureresourcegroup.location
@@ -62,7 +69,7 @@ resource "azurerm_mssql_server" "mcitsqlserv" {
     environment = "production"
   }
 }
-resource "azurerm_mssql_database" "mcitsqldb" {
+resource "azurerm_sql_database" "mcitsqldb" {
   name                = "mcitsqldatabase"
   resource_group_name = azurerm_resource_group.azureresourcegroup.name
   location            = azurerm_resource_group.azureresourcegroup.location
