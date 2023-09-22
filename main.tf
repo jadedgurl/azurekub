@@ -1,4 +1,3 @@
-#This is an Azure Montreal College Tutorial for Storage Account creation--->Storage Container name Creation--->Storage Blob Creation
 locals{ 
   cluster_names=["mcitk8s","mcitk8s2","mcitk8s3","mcitk8s4"]
 }
@@ -31,30 +30,24 @@ resource "azurerm_kubernetes_cluster" "k8scluster" {
   location            = azurerm_resource_group.azureresourcegroup.location
   resource_group_name = azurerm_resource_group.azureresourcegroup.name
   dns_prefix          = "exampleaks1"
-
   default_node_pool {
     name       = "default"
     node_count = 1
     vm_size    = "Standard_D2_v2"
   }
-
   identity {
     type = "SystemAssigned"
   }
-
   tags = {
     Environment = "Production"
   }
 }
-
 output "client_certificate" {
   value     = azurerm_kubernetes_cluster.k8scluster[each.key].kube_config.client_certificate
   sensitive = true
 }
-
 output "kube_config" {
   value = azurerm_kubernetes_cluster.k8scluster[each.key].kube_config_raw
-
   sensitive = true
 }
 resource "azurerm_mssql_server" "mcitsqlserv" {
@@ -62,21 +55,20 @@ resource "azurerm_mssql_server" "mcitsqlserv" {
   resource_group_name          = azurerm_resource_group.azureresourcegroup.name
   location                     = azurerm_resource_group.azureresourcegroup.location
   version                      = "12.0"
-  administrator_login          = var.administrator_login
-  administrator_login_password = var.administrator_login_password
-}
-
-resource "azurerm_mssql_database" "test" {
-  name           = "acctest-db-d"
-  server_id      = azurerm_mssql_server.mcitsqlserv.id
-  collation      = "SQL_Latin1_General_CP1_CI_AS"
-  license_type   = "LicenseIncluded"
-  max_size_gb    = 4
-  read_scale     = true
-  sku_name       = "S0"
-  zone_redundant = true
+  administrator_login          = "4dm1n157r470r"
+  administrator_login_password = "4-v3ry-53cr37-p455w0rd"
 
   tags = {
-    foo = "bar"
+    environment = "production"
+  }
+}
+resource "azurerm_mssql_database" "mcitsqldb" {
+  name                = "mcitsqldatabase"
+  resource_group_name = azurerm_resource_group.azureresourcegroup.name
+  location            = azurerm_resource_group.azureresourcegroup.location
+  server_name         = azurerm_sql_server.mcitsqlserv.name
+
+  tags = {
+    environment = "production"
   }
 }
